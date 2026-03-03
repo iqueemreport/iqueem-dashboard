@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { Search, Sun, Moon, LogOut } from "lucide-react"
+import { Search, Sun, Moon, LogOut, Key } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -17,6 +17,7 @@ import { useThemeStore } from "@/stores/theme-store"
 import { cn } from "@/lib/utils"
 import { ROLES } from "@/constants/roles"
 import { NotificationDropdown } from "./NotificationDropdown"
+import { ChangePasswordModal } from "./ChangePasswordModal"
 
 interface TopbarProps {
   title: string
@@ -31,6 +32,7 @@ export function Topbar({ title }: TopbarProps) {
 
   const roleLabel =
     ROLES.find((r) => r.value === profile?.role)?.label ?? profile?.role
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
 
   async function handleSignOut() {
     await signOut()
@@ -84,12 +86,17 @@ export function Topbar({ title }: TopbarProps) {
                 </Badge>
               </div>
             </div>
+            <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
+              <Key className="mr-2 h-4 w-4" />
+              Şifre Değiştir
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={handleSignOut}>
               <LogOut className="mr-2 h-4 w-4" />
               Çıkış Yap
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ChangePasswordModal open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
       </div>
     </header>
   )

@@ -6,10 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { UserTable } from "@/components/modules/admin/UserTable"
 import { HotelTable } from "@/components/modules/admin/HotelTable"
 import { PerformanceTable } from "@/components/modules/admin/PerformanceTable"
-import { InviteUserModal } from "@/components/modules/admin/InviteUserModal"
+import { AddUserModal } from "@/components/modules/admin/AddUserModal"
 
 export function AdminPage() {
-  const [inviteOpen, setInviteOpen] = useState(false)
+  const [addUserOpen, setAddUserOpen] = useState(false)
 
   return (
     <div className="space-y-6">
@@ -29,16 +29,16 @@ export function AdminPage() {
                   Rol, platform ve otel atamalarını yönetin
                 </p>
               </div>
-              <Button type="button" size="sm" onClick={() => setInviteOpen(true)}>
+              <Button type="button" size="sm" onClick={() => setAddUserOpen(true)}>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Kullanıcı Davet Et
+                Kullanıcı Ekle
               </Button>
             </CardHeader>
             <CardContent>
               <UserTable />
             </CardContent>
           </Card>
-          <InviteUserModal open={inviteOpen} onOpenChange={setInviteOpen} />
+          <AddUserModal open={addUserOpen} onOpenChange={setAddUserOpen} />
         </TabsContent>
         <TabsContent value="hotels" className="space-y-4">
           <Card>
