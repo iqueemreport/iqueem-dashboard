@@ -18,7 +18,12 @@ export function useCreateUser() {
       if (!session?.access_token) throw new Error("Oturum bulunamadı. Lütfen tekrar giriş yapın.")
 
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-user`
-      const res = await fetch(url, {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+      let res: Response
+      try {
+        res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,10 +34,23 @@ export function useCreateUser() {
           password,
           full_name: full_name?.trim() || null,
         }),
-      })
+        signal: controller.signal,
+        })
+      } catch (err) {
+        clearTimeout(timeoutId)
+        if (err instanceof Error && err.name === "AbortError") {
+          throw new Error("İstek zaman aşımına uğradı. create-user fonksiyonu deploy edildi mi? Supabase Dashboard veya 'supabase functions deploy create-user' ile kontrol edin.")
+        }
+        throw err
+      } finally {
+        clearTimeout(timeoutId)
+      }
 
       const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error ?? `Hata: ${res.status}`)
+      if (!res.ok) {
+        const msg = json.error ?? (res.status === 404 ? "create-user fonksiyonu bulunamadı. Supabase'e deploy edin: supabase functions deploy create-user" : `Hata: ${res.status}`)
+        throw new Error(msg)
+      }
       return json
     },
     onSuccess: () => {
